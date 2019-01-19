@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/oauthexample
+    username: postgres
+    password: postgres
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        format_sql: true
+        temp:
+          use_jdbc_metadata_defaults: false
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId:
+            clientSecret:
+            redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
+            authorizationUri: "https://accounts.google.com/o/oauth2/v2/auth"
+            scope:
+              - email
+              - profile
+              - https://mail.google.com/
+
+
+app:
+  auth:
+    tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+    tokenExpirationMsec: 864000000
+  oauth2:
+    authorizationRequestUritemplate: "/oauth2/authorize/{registrationId}"
+    authorizedRedirectUris:
+      - http://localhost:4200/auth/redirect
