@@ -9,12 +9,12 @@ import com.oauthclient.service.UserConferenceService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/conference")
@@ -26,11 +26,34 @@ public class ConferenceController {
     @Autowired
     private ModelMapper mapper;
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<?> createNewConference(@Valid @RequestBody NewConferenceRequest conferenceRequest,
-            @CurrentUser UserPrincipal userPrincipal) {
-        Conference conference = userConferenceService.saveNewConference(conferenceRequest, userPrincipal);
+            @CurrentUser UserPrincipal user) {
+        Conference conference = userConferenceService.saveNewConference(conferenceRequest, user);
         return ResponseEntity.ok(mapper.map(conference, ConferenceResponse.class));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll(@CurrentUser UserPrincipal user) {
+        List<ConferenceResponse> result = userConferenceService.findAllByUser(user)
+                .stream()
+                .map(conference -> mapper.map(conference, ConferenceResponse.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<?> existsBySubkect(@RequestParam("subject") String subject, @CurrentUser UserPrincipal user) {
+        return ResponseEntity.ok(userConferenceService.existsBySubject(subject, user));
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getById(@PathVariable("id") Long id, @CurrentUser UserPrincipal user) {
+        Optional<Conference> optionalConference = userConferenceService.findByIdAndUser(id, user);
+        if (optionalConference.isPresent()) {
+            return ResponseEntity.ok(optionalConference.map(conference -> mapper.map(conference, ConferenceResponse.class)));
+        }
+        return ResponseEntity.notFound().build();
     }
 
 }

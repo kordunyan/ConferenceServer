@@ -31,9 +31,6 @@ public class User {
     @Column(nullable = false)
     private Boolean emailVerified = false;
 
-    @JsonIgnore
-    private String password;
-
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
@@ -44,6 +41,20 @@ public class User {
     private Token token;
 
     private String providerId;
+
+    public User() {
+    }
+
+    public User(User user) {
+        this.id = user.id;
+        this.name = user.name;
+        this.email = user.email;
+        this.imageUrl = user.imageUrl;
+        this.emailVerified = user.emailVerified;
+        this.provider = user.provider;
+        this.token = user.token;
+        this.providerId = user.providerId;
+    }
 
     public Long getId() {
         return id;
@@ -83,14 +94,6 @@ public class User {
 
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public AuthProvider getProvider() {
