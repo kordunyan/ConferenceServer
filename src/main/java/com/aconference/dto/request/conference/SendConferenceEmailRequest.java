@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 public class SendConferenceEmailRequest {
 
@@ -16,9 +17,11 @@ public class SendConferenceEmailRequest {
     @NotBlank
     private String subject;
     @NotEmpty
-    private List<String> emailsTo;
-    @NotEmpty
+    private Set<String> emailsTo;
+
     private List<MultipartFile> inviteFiles;
+
+    private Set<Long> savedInvitationFilesIds;
 
     public Long getId() {
         return id;
@@ -44,11 +47,11 @@ public class SendConferenceEmailRequest {
         this.subject = subject;
     }
 
-    public List<String> getEmailsTo() {
+    public Set<String> getEmailsTo() {
         return emailsTo;
     }
 
-    public void setEmailsTo(List<String> emailsTo) {
+    public void setEmailsTo(Set<String> emailsTo) {
         this.emailsTo = emailsTo;
     }
 
@@ -58,5 +61,13 @@ public class SendConferenceEmailRequest {
 
     public void setInviteFiles(List<MultipartFile> inviteFiles) {
         this.inviteFiles = inviteFiles;
+    }
+
+    public Set<Long> getSavedInvitationFilesIds() {
+        return savedInvitationFilesIds;
+    }
+
+    public void setSavedInvitationFilesIds(Set<Long> savedInvitationFilesIds) {
+        this.savedInvitationFilesIds = savedInvitationFilesIds;
     }
 }

@@ -24,6 +24,7 @@ spring:
             clientSecret:
             redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
             authorizationUri: "https://accounts.google.com/o/oauth2/v2/auth"
+            refreshTokenUri: "https://www.googleapis.com/oauth2/v4/token"
             scope:
               - email
               - profile

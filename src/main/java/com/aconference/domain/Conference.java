@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,7 @@ public class Conference {
 
     private LocalDate dateCreated;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne()
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "USER_ID_FK"))
     private User user;
 
@@ -102,11 +103,36 @@ public class Conference {
 
     public void addEmailTo(EmailTo emailTo) {
         emailsTo.add(emailTo);
+        emailTo.setConference(this);
     }
 
-    public void addAllInvitationFiles(List<InvitationFile> invitationFiles) {
+    public void setAllInvitationFiles(Collection<InvitationFile> invitationFiles) {
+        if (CollectionUtils.isEmpty(invitationFiles)) {
+            return;
+        }
         this.invitationFiles.clear();
-        this.invitationFiles.addAll(invitationFiles);
+        addAllInvitationFiles(invitationFiles);
+    }
+
+    public void addAllInvitationFiles(Collection<InvitationFile> invitationFiles) {
+        invitationFiles.forEach(this::addInvitationFile);
+    }
+
+    public void setAllEmailsTo(Collection<EmailTo> emailsTo) {
+        if (CollectionUtils.isEmpty(emailsTo)) {
+            return;
+        }
+        this.emailsTo.clear();
+        addAllEmailsTo(emailsTo);
+    }
+
+    public void addAllEmailsTo(Collection<EmailTo> emailsTo) {
+        emailsTo.forEach(this::addEmailTo);
+    }
+
+    public void addInvitationFile(InvitationFile invitationFile) {
+        this.invitationFiles.add(invitationFile);
+        invitationFile.setConference(this);
     }
 
     public boolean hasEmailTo(EmailTo email) {
@@ -118,5 +144,13 @@ public class Conference {
 
     public boolean hasNotEmailTo(EmailTo email) {
         return !hasEmailTo(email);
+    }
+
+    public Boolean getEmailSent() {
+        return emailSent;
+    }
+
+    public void setEmailSent(Boolean emailSent) {
+        this.emailSent = emailSent;
     }
 }

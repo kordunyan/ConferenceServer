@@ -4,6 +4,9 @@ import com.aconference.domain.Token;
 import com.aconference.domain.User;
 import com.aconference.repository.TokenRepository;
 import com.aconference.repository.UserRepository;
+import com.aconference.service.google.GmailService;
+import com.aconference.service.google.entity.GoogleException;
+import com.aconference.service.google.entity.message.LightMail;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -15,12 +18,15 @@ import java.util.Optional;
 @Service
 public class CustomOAuthAuthorizedClientService implements OAuth2AuthorizedClientService {
 
-    private UserRepository userRepository;
-    private TokenRepository tokenRepository;
+    private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
+    private final GmailService gmailService;
 
-    public CustomOAuthAuthorizedClientService(UserRepository userRepository, TokenRepository tokenRepository) {
-        this.userRepository = userRepository;
+    public CustomOAuthAuthorizedClientService(TokenRepository tokenRepository, UserRepository userRepository,
+            GmailService gmailService) {
         this.tokenRepository = tokenRepository;
+        this.userRepository = userRepository;
+        this.gmailService = gmailService;
     }
 
     @Override
@@ -37,6 +43,16 @@ public class CustomOAuthAuthorizedClientService implements OAuth2AuthorizedClien
         }
         User user = optionalUser.get();
         updateToken(user, oAuth2AuthorizedClient);
+        setUserLastMessageId(user);
+    }
+
+    private void setUserLastMessageId(User user) {
+        try {
+            Optional<LightMail> lastUserMessage = gmailService.getLastLightMessage(user);
+            lastUserMessage.ifPresent(message -> user.setLastMessageId(message.getId()));
+        } catch (GoogleException e) {
+            // Log
+        }
     }
 
     private void updateToken(User user, OAuth2AuthorizedClient oAuth2AuthorizedClient) {
@@ -50,7 +66,6 @@ public class CustomOAuthAuthorizedClientService implements OAuth2AuthorizedClien
         if (oAuth2AuthorizedClient.getRefreshToken() != null) {
             token.setOauthRefreshToken(oAuth2AuthorizedClient.getRefreshToken().getTokenValue());
         }
-        tokenRepository.save(token);
     }
 
     @Override

@@ -41,4 +41,12 @@ public class EmailTo {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public Conference getConference() {
+        return conference;
+    }
+
+    public void setConference(Conference conference) {
+        this.conference = conference;
+    }
 }

@@ -66,12 +66,12 @@ public class ConferenceController {
     @PostMapping("/send-email")
     public ResponseEntity<?> sendConferenceEmail(@Valid SendConferenceEmailRequest sendConferenceEmailRequest, @CurrentUser User user) {
         try {
-            conferenceManagerService.buildConferenceAndSendEmail(sendConferenceEmailRequest, user);
+            Conference result = conferenceManagerService.buildConferenceAndSendEmail(sendConferenceEmailRequest, user);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok("OK");
     }
 
 }

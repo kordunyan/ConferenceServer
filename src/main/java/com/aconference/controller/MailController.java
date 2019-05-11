@@ -1,11 +1,20 @@
 package com.aconference.controller;
 
+import com.aconference.domain.Token;
+import com.aconference.domain.User;
+import com.aconference.service.UserService;
+import com.aconference.service.google.entity.GoogleException;
+import com.aconference.service.mail.UserMailProcessor;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Instant;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/mail")
@@ -13,8 +22,20 @@ public class MailController {
 
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserMailProcessor userMailProcessor;
+
     @GetMapping("/connect")
     public void testConnection(@RequestParam("token") String token) {
+
+        try {
+            userMailProcessor.processUsersMails();
+        } catch (GoogleException e) {
+            e.printStackTrace();
+        }
 
 //        try {
 //            GoogleCredential credential = new GoogleCredential().setAccessToken(token);

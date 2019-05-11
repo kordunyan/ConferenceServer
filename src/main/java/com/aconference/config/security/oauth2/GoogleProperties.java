@@ -12,6 +12,7 @@ public class GoogleProperties {
     private String redirectUriTemplate;
     private String authorizationUri;
     private Set<String> scope;
+    private String refreshTokenUri;
 
     public String getAuthorizationUri() {
         return authorizationUri;
@@ -51,5 +52,13 @@ public class GoogleProperties {
 
     public void setScope(Set<String> scope) {
         this.scope = scope;
+    }
+
+    public String getRefreshTokenUri() {
+        return refreshTokenUri;
+    }
+
+    public void setRefreshTokenUri(String refreshTokenUri) {
+        this.refreshTokenUri = refreshTokenUri;
     }
 }

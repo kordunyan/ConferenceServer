@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -31,20 +33,26 @@ public class User {
     @Column(nullable = false)
     private Boolean emailVerified = false;
 
+    private String lastMessageId;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "token_id")
     @JsonIgnore
     private Token token;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "configuration_id")
     private Configuration configuration;
 
     private String providerId;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Conference> conferences = new ArrayList<>();
+
 
     public User() {
     }
@@ -59,6 +67,7 @@ public class User {
         this.token = user.token;
         this.providerId = user.providerId;
         this.configuration = user.configuration;
+        this.lastMessageId = user.lastMessageId;
     }
 
     public Long getId() {
@@ -131,5 +140,21 @@ public class User {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+    }
+
+    public String getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(String lastMessageId) {
+        this.lastMessageId = lastMessageId;
+    }
+
+    public List<Conference> getConferences() {
+        return conferences;
+    }
+
+    public void setConferences(List<Conference> conferences) {
+        this.conferences = conferences;
     }
 }

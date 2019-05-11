@@ -26,12 +26,6 @@ public class ConferenceService {
 
     @Transactional
     public Conference save(Conference conference) {
-        if (CollectionUtils.isNotEmpty(conference.getEmailsTo())) {
-            emailToService.saveAll(conference.getEmailsTo());
-        }
-        if (CollectionUtils.isNotEmpty(conference.getInvitationFiles())) {
-            invitationFileService.saveAll(conference.getInvitationFiles());
-        }
         return conferenceRepository.save(conference);
     }
 
